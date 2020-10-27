@@ -12,6 +12,8 @@ BLACK = (0,0,0)
 RED = (255,0,0)
 GREEN = (54,89,74)
 GREY = (50,50,50)
+YELLOW = (255, 255,0)
+
 
 square_size = (screen_height - 100) / 8
 
@@ -38,19 +40,11 @@ def get_click_index(position):
 def find_moves(index):
     x_index = index[0]
     y_index = index[1]
-    print(x_index)
-    print(y_index)
     piece_color= board_grid[x_index][y_index][0]
     piece_type= board_grid[x_index][y_index][1]
 
     possible_moves = []
     
-    # index_check = [1, -1]
-    # for i in index_check:
-    #     for j in index_check:
-    #         if x_index + i > 0 and x_index + i <8 and y_index + j > 0 and x_index + j <8:
-    #             if board_grid[x_index+i][y_index + j]
-
 
     if piece_type == "king":
         print("king")
@@ -89,7 +83,6 @@ def find_moves(index):
 def move_piece(piece, position, color):
     build_board_x = 200
     build_board_y = 50
-    print(color)
     if color is "red":
         pygame.draw.circle(screen,RED, (int(build_board_x + square_size/2 + position[0]*square_size), int(build_board_y + square_size/2 + position[1]*square_size)), int(square_size/3))
         pygame.draw.circle(screen,GREY, (int(build_board_x + square_size/2 + piece[0]*square_size), int(build_board_y + square_size/2 + piece[1]*square_size)), int(square_size/3))
@@ -100,6 +93,22 @@ def move_piece(piece, position, color):
 
     board_grid[piece[0]][piece[1]] = ("empty","empty")
     board_grid[position[0]][position[1]] = (color, "normal")
+
+
+def highlight_moves(moves):
+    build_board_x = 200
+    build_board_y = 50
+    for move in moves:
+        pygame.draw.rect(screen, YELLOW, (build_board_x + move[0]*square_size, build_board_y + move[1] * square_size, square_size, square_size))
+
+    print(moves)
+
+
+def clear_highlights(moves):
+    build_board_x = 200
+    build_board_y = 50
+    for move in moves:
+        pygame.draw.rect(screen, GREY, (build_board_x + move[0]*square_size, build_board_y + move[1] * square_size, square_size, square_size))
 
 
 #Build game board and grid
@@ -140,14 +149,17 @@ while game:
             mouse_pos = pygame.mouse.get_pos()
             click_index = get_click_index(mouse_pos)
             if click_index in possible_moves:
+                clear_highlights(possible_moves)
                 move_piece(selected_piece, click_index, selected_color)
                 possible_moves = []
                 selected_color = ""
                 selected_piece = (0,0)
-            else:
+            elif board_grid[click_index[0]][click_index[1]][0] != "e":
+                print("elif"    )
                 selected_color = (board_grid[click_index[0]][click_index[1]])[0]
                 selected_piece = click_index
-                possible_moves = find_moves(click_index)  
+                possible_moves = find_moves(click_index) 
+                highlight_moves(possible_moves)
            
         
 
